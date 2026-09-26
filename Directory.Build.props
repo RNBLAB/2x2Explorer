@@ -1,0 +1,19 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <NeutralLanguage>ko-KR</NeutralLanguage>
+    <Product>2x2 Explorer</Product>
+    <Version>1.2.0</Version>
+    <Authors>RNBLAB</Authors>
+    <Copyright>Copyright 2026 RNBLAB</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/RNBLAB/2x2Explorer</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>

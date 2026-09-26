@@ -1,0 +1,21 @@
+<Window x:Class="Explorer.App.Views.Dialogs.SearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:panes="clr-namespace:Explorer.App.Views.Panes"
+        Title="검색"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource App.Background}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        PreviewKeyDown="OnWindowKeyDown">
+
+    <!-- 바깥 DataContext 는 이 창을 연 칸의 PaneViewModel 입니다. 목록이 아이콘 크기 같은 값을 여기서 읽습니다. -->
+    <Border Padding="10"
+            Background="{DynamicResource Pane.Background}"
+            BorderBrush="{DynamicResource Pane.Border}"
+            BorderThickness="1">
+        <panes:FileListView x:Name="Results" />
+    </Border>
+
+</Window>

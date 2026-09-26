@@ -1,0 +1,234 @@
+<Window x:Class="Explorer.App.Views.Dialogs.ImageEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Explorer.App.Views.Dialogs"
+        Title="그림 편집"
+        Width="1800"
+        Height="900"
+        MinWidth="1100"
+        MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        AllowDrop="True"
+        Drop="OnFileDropped"
+        DragOver="OnFileDragOver"
+        PreviewKeyDown="OnWindowKeyDown"
+        Closing="OnClosing"
+        Closed="OnClosed"
+        Background="{DynamicResource App.Background}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <DockPanel>
+        <local:PopupTitleBar x:Name="TitleBar" DockPanel.Dock="Top" />
+
+    <Grid>
+            <!-- 왼쪽은 이 창의 기능, 오른쪽은 편집 창들이 함께 쓰는 탐색기입니다 (58 : 42). 경계선은 끌어 옮깁니다. -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="58*" MinWidth="560" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="42*" MinWidth="240" />
+            </Grid.ColumnDefinitions>
+
+    <Grid Margin="12" Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 첫째 줄: 불러오기, 되돌리기, 돌리기, 그림판, 저장 -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,8" LastChildFill="False">
+            <Button DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnOpenFile" Content="열기…"
+                    ToolTip="그림 파일을 엽니다 (Ctrl+O). 파일을 이 창에 끌어다 놓아도 됩니다." />
+            <Button DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,16,0"
+                    Click="OnPaste" Content="클립보드에서"
+                    ToolTip="클립보드의 그림을 엽니다 (Ctrl+V). 캡처 도구로 찍은 그림, 복사한 그림 파일 모두 됩니다." />
+
+            <Button x:Name="UndoButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnUndo" Content="되돌리기" ToolTip="Ctrl+Z" />
+            <Button x:Name="RedoButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,16,0"
+                    Click="OnRedo" Content="다시 하기" ToolTip="Ctrl+Y" />
+
+            <Button x:Name="RotateLeftButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,4,0"
+                    Click="OnRotateLeft" Content="↺" ToolTip="입력한 각도만큼 왼쪽으로 돌립니다 (Ctrl+L)" />
+            <TextBox x:Name="RotateStepBox" DockPanel.Dock="Left" Style="{StaticResource AddressBox}" Width="44" Margin="0,0,2,0"
+                     Text="90" VerticalAlignment="Center"
+                     ToolTip="↺ / ↻ 가 한 번에 돌릴 각도(1~360).&#x0a;90의 배수면 바로 무손실로 돌리고, 그 밖의 각도는 기울기 미리보기에 더해 [적용]·Enter 로 확정합니다." />
+            <TextBlock DockPanel.Dock="Left" Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,4,0" Text="°" />
+            <Button x:Name="RotateRightButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnRotateRight" Content="↻" ToolTip="입력한 각도만큼 오른쪽으로 돌립니다 (Ctrl+R)" />
+            <Button x:Name="FlipHorizontalButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnFlipHorizontal" Content="좌우 반전" />
+            <Button x:Name="FlipVerticalButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}" Margin="0,0,16,0"
+                    Click="OnFlipVertical" Content="상하 반전" />
+
+            <Button x:Name="PaintButton" DockPanel.Dock="Left" Style="{StaticResource DialogSmallButton}"
+                    Click="OnOpenInPaint" Content="그림판에서 열기"
+                    ToolTip="지금 편집한 상태를 윈도우 그림판으로 엽니다 (Ctrl+E).&#x0a;그림판에서 Ctrl+S 로 저장하면 이 창으로 자동으로 돌아옵니다." />
+
+            <Button x:Name="SaveButton" DockPanel.Dock="Right" Style="{StaticResource DialogPrimaryButton}"
+                    Click="OnSaveAs" Content="다른 이름으로 저장"
+                    ToolTip="Ctrl+S. 원본은 그대로 두고 새 파일로 저장합니다. 형식은 확장자로 정합니다." />
+        </DockPanel>
+
+        <!-- 둘째 줄: 자르기와 크기 -->
+        <WrapPanel Grid.Row="1" Margin="0,0,0,8">
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,6,0" Text="자르기 비율" />
+            <ComboBox x:Name="RatioBox" Width="190" MaxDropDownHeight="520" VerticalAlignment="Center" Margin="0,0,6,0"
+                      SelectionChanged="OnRatioChanged"
+                      ToolTip="그림 위를 끌어 영역을 잡습니다. 비율을 고르면 그 비율로 가장 큰 영역을 가운데에 잡아 줍니다." />
+            <Button x:Name="SwapRatioButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnSwapRatio" Content="↔ 가로세로"
+                    ToolTip="비율을 가로세로 뒤집습니다. 사진 규격은 세로형(3:4 등)으로 적혀 있어, 가로 사진에 쓸 때 누릅니다." />
+            <Button x:Name="CropButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnCrop" Content="자르기" ToolTip="잡은 영역만 남깁니다 (Enter)" />
+            <Button x:Name="ClearSelectionButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,24,0"
+                    Click="OnClearSelection" Content="선택 해제" ToolTip="Esc" />
+
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,6,0" Text="크기" />
+            <TextBox x:Name="WidthBox" Style="{StaticResource AddressBox}" Width="64" Margin="0,0,4,0"
+                     TextChanged="OnWidthChanged" ToolTip="가로 픽셀" />
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,4,0" Text="×" />
+            <TextBox x:Name="HeightBox" Style="{StaticResource AddressBox}" Width="64" Margin="0,0,8,0"
+                     TextChanged="OnHeightChanged" ToolTip="세로 픽셀" />
+            <TextBox x:Name="PercentBox" Style="{StaticResource AddressBox}" Width="52" Margin="0,0,4,0"
+                     TextChanged="OnPercentChanged"
+                     ToolTip="지금 크기에 대한 퍼센트입니다. 넣으면 가로세로가 같은 배율로 채워집니다. [크기 적용]을 눌러야 바뀝니다." />
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,8,0" Text="%" />
+            <CheckBox x:Name="KeepRatioBox" VerticalAlignment="Center" Margin="0,0,8,0" IsChecked="True"
+                      Foreground="{DynamicResource Text.Primary}" Content="비율 유지" />
+            <Button x:Name="ResizeButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,24,0"
+                    Click="OnResize" Content="크기 적용" />
+
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,6,0" Text="JPEG 품질" />
+            <TextBox x:Name="QualityBox" Style="{StaticResource AddressBox}" Width="44" Text="90"
+                     ToolTip="1~100. JPEG으로 저장할 때만 씁니다." />
+        </WrapPanel>
+
+        <!-- 셋째 줄: 기울기와 수평맞추기 -->
+        <WrapPanel Grid.Row="2" Margin="0,0,0,8">
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,6,0" Text="기울기" />
+            <Slider x:Name="TiltSlider" Width="360" VerticalAlignment="Center" Margin="0,0,6,0"
+                    Minimum="-180" Maximum="180" SmallChange="0.1" LargeChange="1"
+                    ValueChanged="OnTiltSliderChanged"
+                    ToolTip="끄는 대로 바로 돌아갑니다(-180 ~ 180°). 90° 단위는 잘림 없이 돌리고, 나머지 각도만 빈 귀퉁이가 없도록 가장자리를 잘라 낸 모습을 미리 보입니다. 방향키로 0.1°씩 움직입니다." />
+            <TextBox x:Name="TiltBox" Style="{StaticResource AddressBox}" Width="52" Margin="0,0,4,0" Text="0"
+                     KeyDown="OnTiltBoxKeyDown" LostFocus="OnTiltBoxLostFocus"
+                     ToolTip="각도를 직접 넣고 Enter. 시계 방향이 +입니다 (-180 ~ 180, 벗어나면 되감음)." />
+            <TextBlock Style="{StaticResource PaneSubLabel}" VerticalAlignment="Center" Margin="0,0,8,0" Text="°" />
+            <Button x:Name="ResetTiltButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnResetTilt" Content="0°" ToolTip="기울기를 0으로 (Esc)" />
+            <Button x:Name="ApplyTiltButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,24,0"
+                    Click="OnApplyTilt" Content="적용" ToolTip="기울기를 픽셀에 반영합니다 (Enter). 다른 편집이나 저장을 해도 먼저 반영됩니다." />
+
+            <Button x:Name="StraightenButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnStraighten" Content="수평맞추기"
+                    ToolTip="사진 속 수평(또는 수직)이어야 할 선을 따라 그으면 그 선이 곧아지도록 기울기를 맞춥니다." />
+            <Button x:Name="AddHorizontalGuideButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnAddHorizontalGuide" Content="+ 수평 안내선" ToolTip="끌어 옮기고, 오른쪽 단추로 지웁니다." />
+            <Button x:Name="AddVerticalGuideButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,6,0"
+                    Click="OnAddVerticalGuide" Content="+ 수직 안내선" ToolTip="끌어 옮기고, 오른쪽 단추로 지웁니다." />
+            <Button x:Name="ClearGuidesButton" Style="{StaticResource DialogSmallButton}" Margin="0,0,8,0"
+                    Click="OnClearGuides" Content="안내선 지우기" />
+            <CheckBox x:Name="GridCheck" VerticalAlignment="Center" Foreground="{DynamicResource Text.Primary}"
+                      Content="격자" Checked="OnGridToggled" Unchecked="OnGridToggled"
+                      ToolTip="격자를 늘 보입니다. 기울이는 중이나 수평맞추기 중에는 끄더라도 보입니다." />
+        </WrapPanel>
+
+        <!-- 그림 -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource Pane.Background}"
+                BorderBrush="{DynamicResource Pane.Border}"
+                BorderThickness="1"
+                ClipToBounds="True">
+            <Grid>
+                <TextBlock x:Name="Placeholder"
+                           Style="{StaticResource PanePlaceholder}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           TextAlignment="Center"
+                           Text="Ctrl+V 로 클립보드의 그림을 붙이거나,&#x0a;그림 파일을 이 창에 끌어다 놓거나, [열기…]를 누르십시오." />
+
+                <!--
+                    그림 칸은 그림의 픽셀 크기 그대로 두고 Viewbox 가 창에 맞게 줄입니다.
+                    그래서 마우스 좌표를 Surface 기준으로 읽으면 곧 픽셀 좌표입니다.
+                    선 굵기는 줄어드는 배율만큼 코드에서 키워 늘 1픽셀로 보이게 합니다.
+                -->
+                <!--
+                    평소에는 스크롤 막대를 끄고 Viewbox 가 칸에 맞춥니다(맞춤).
+                    Ctrl+휠로 배율을 정하면 Viewbox 크기를 그림 픽셀 × 배율로 못 박고 스크롤합니다. Ctrl+0 으로 맞춤으로 돌아갑니다.
+                -->
+                <ScrollViewer x:Name="StageScroller"
+                              Focusable="False"
+                              HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Disabled"
+                              PreviewMouseWheel="OnStageWheel">
+                <Viewbox x:Name="Stage"
+                         Margin="12"
+                         Stretch="Uniform"
+                         StretchDirection="DownOnly"
+                         SizeChanged="OnStageSizeChanged">
+                    <Grid x:Name="Surface" ClipToBounds="True">
+                        <!-- 기울기 미리보기는 이 그림만 돌려 보입니다. 가운데를 축으로 돕니다. -->
+                        <Image x:Name="Picture"
+                               Stretch="Fill"
+                               RenderTransformOrigin="0.5,0.5"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+
+                        <Canvas x:Name="GridLayer" IsHitTestVisible="False" />
+
+                        <Canvas x:Name="Overlay"
+                                Background="Transparent"
+                                Cursor="Cross"
+                                MouseLeftButtonDown="OnOverlayDown"
+                                MouseMove="OnOverlayMove"
+                                MouseLeftButtonUp="OnOverlayUp"
+                                MouseRightButtonDown="OnOverlayRightDown"
+                                LostMouseCapture="OnOverlayLostCapture">
+                            <Path x:Name="Shade"
+                                  Fill="#99000000"
+                                  IsHitTestVisible="False"
+                                  Visibility="Collapsed" />
+                            <Rectangle x:Name="SelectionBox"
+                                       Stroke="White"
+                                       IsHitTestVisible="False"
+                                       Visibility="Collapsed" />
+                            <Rectangle x:Name="SelectionDash"
+                                       Stroke="#FF4C8DFF"
+                                       IsHitTestVisible="False"
+                                       Visibility="Collapsed" />
+                        </Canvas>
+                    </Grid>
+                </Viewbox>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- 상태 줄 -->
+        <DockPanel Grid.Row="4" Margin="0,8,0,0" LastChildFill="True">
+            <TextBlock x:Name="ZoomLabel"
+                       DockPanel.Dock="Right"
+                       Style="{StaticResource PaneSubLabel}"
+                       Foreground="{DynamicResource Accent}"
+                       Margin="12,0,0,0"
+                       ToolTip="Ctrl+휠로 확대·축소, Ctrl+0 으로 창에 맞춤" />
+            <TextBlock x:Name="SelectionLabel"
+                       DockPanel.Dock="Right"
+                       Style="{StaticResource PaneSubLabel}"
+                       Margin="12,0,0,0" />
+            <TextBlock x:Name="StatusLabel"
+                       Style="{StaticResource PaneSubLabel}" />
+        </DockPanel>
+    </Grid>
+
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent" ResizeBehavior="PreviousAndNext" />
+
+            <local:PopupExplorer x:Name="SideExplorer" Grid.Column="2" Margin="0,12,12,12"
+                                 Hint="그림을 두 번 누르거나 왼쪽으로 끌어 놓으면 편집 창에 열립니다." />
+        </Grid>
+    </DockPanel>
+
+</Window>

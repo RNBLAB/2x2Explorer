@@ -1,0 +1,115 @@
+<Window x:Class="Explorer.App.Views.Dialogs.RenameLogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="이름 바꾼 기록"
+        Width="880"
+        Height="560"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource App.Background}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                   Style="{StaticResource PaneSubLabel}"
+                   Margin="0,0,0,10"
+                   TextWrapping="Wrap"
+                   Text="왼쪽에서 기록을 고르면 그때 무엇이 어떻게 바뀌었는지 오른쪽에 나옵니다. 되돌리면 그 결과도 새 기록으로 남습니다." />
+
+        <ListBox x:Name="Records"
+                 Grid.Row="1" Grid.Column="0"
+                 Margin="0,0,12,0"
+                 Background="{DynamicResource List.Background}"
+                 BorderBrush="{DynamicResource Pane.Border}"
+                 BorderThickness="1"
+                 Foreground="{DynamicResource Text.Primary}"
+                 SelectionChanged="OnRecordChosen">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="{Binding Summary}" />
+                        <TextBlock Text="{Binding Folder}"
+                                   Style="{StaticResource PaneSubLabel}"
+                                   TextTrimming="CharacterEllipsis"
+                                   ToolTip="{Binding FilePath}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ListView x:Name="Pairs"
+                  Grid.Row="1" Grid.Column="1"
+                  Style="{StaticResource FileListView}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <ListView.View>
+                <GridView ColumnHeaderContainerStyle="{StaticResource FileColumnHeader}">
+                    <GridViewColumn Width="270">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="바꾸기 전" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BeforeName}" ToolTip="{Binding Before}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="270">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="바꾼 뒤" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding AfterName}" ToolTip="{Binding After}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="90">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="지금" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding State}" Foreground="{DynamicResource Text.Secondary}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <DockPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,12,0,0" LastChildFill="False">
+            <TextBlock x:Name="Summary"
+                       DockPanel.Dock="Left"
+                       Style="{StaticResource PaneSubLabel}"
+                       VerticalAlignment="Center" />
+
+            <Button DockPanel.Dock="Right"
+                    Style="{StaticResource DialogButton}"
+                    Content="닫기"
+                    Margin="8,0,0,0"
+                    IsCancel="True" />
+
+            <Button x:Name="UndoButton"
+                    DockPanel.Dock="Right"
+                    Style="{StaticResource DialogPrimaryButton}"
+                    Content="이 기록으로 되돌리기"
+                    IsEnabled="False"
+                    Click="OnUndo" />
+        </DockPanel>
+
+    </Grid>
+
+</Window>

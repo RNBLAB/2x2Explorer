@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Explorer.App</RootNamespace>
+    <AssemblyName>2x2Explorer</AssemblyName>
+    <!-- The namespace stays Explorer.App: a C# identifier cannot begin with a digit. -->
+    <AssemblyTitle>2x2 Explorer</AssemblyTitle>
+    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ApplicationIcon only writes the icon into 2x2Explorer.exe. start.cmd runs the app as
+         dotnet 2x2Explorer.dll, so the window and taskbar icon come from this resource instead.
+         Keep both: the exe icon is what Windows shows for the file itself. -->
+    <Resource Include="Resources\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- PDF 편집기의 병합·삭제·그림→PDF 저장에 씁니다 (MIT). 미리보기는 이 꾸러미가 아니라 윈도우 PDF 부품으로 그립니다. -->
+    <PackageReference Include="PDFsharp" Version="6.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Explorer.Core\Explorer.Core.csproj" />
+    <ProjectReference Include="..\Explorer.Shell\Explorer.Shell.csproj" />
+  </ItemGroup>
+
+</Project>

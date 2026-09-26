@@ -1,0 +1,673 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:conv="clr-namespace:Explorer.App.Converters"
+                    xmlns:controls="clr-namespace:Explorer.App.Controls">
+
+    <sys:Double x:Key="Pane.HeaderHeight">32</sys:Double>
+
+    <!-- IsLoading 같은 bool을 Visibility로 바꿉니다. -->
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+
+    <conv:EmptyToCollapsedConverter x:Key="EmptyToCollapsed" />
+
+    <!-- ── 글자 ── -->
+
+    <Style x:Key="PaneLabel" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="PaneSubLabel" TargetType="TextBlock" BasedOn="{StaticResource PaneLabel}">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+
+    <Style x:Key="PanePlaceholder" TargetType="TextBlock" BasedOn="{StaticResource PaneLabel}">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Muted}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextTrimming" Value="None" />
+    </Style>
+
+    <!-- ── 도구 모음 ── -->
+
+    <Style x:Key="ToolButton" TargetType="Button">
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Margin" Value="0,0,2,0" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Chrome"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Button.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Button.Pressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource Text.Muted}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        도구 모음 아이콘 단추입니다.
+        Segoe MDL2 Assets는 Windows 10 1709 이상과 11에 기본으로 들어 있는 아이콘 글꼴입니다.
+        윈도우 탐색기가 쓰는 것과 같은 모양이라 별도 이미지 파일이 필요 없습니다.
+    -->
+    <Style x:Key="ToolIconButton" TargetType="Button" BasedOn="{StaticResource ToolButton}">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="ToolTipService.InitialShowDelay" Value="400" />
+        <Setter Property="ToolTipService.ShowDuration" Value="8000" />
+        <!-- 꺼진 단추에도 툴팁이 떠야 왜 못 쓰는지 알 수 있습니다. -->
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+    </Style>
+
+    <!-- 이름 없는 스타일이라 앱 전체의 툴팁에 적용됩니다. 기본 툴팁은 밝은 색이라 어두운 화면에서 튑니다. -->
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource ToolTip.Background}" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ToolTip.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="8,5" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="HasDropShadow" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AddressBox" TargetType="TextBox">
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Input.Background}" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Input.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Accent}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- ── 파일 목록 ── -->
+
+    <Style x:Key="FileColumnHeader" TargetType="GridViewColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource Pane.HeaderBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Pane.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,1,1" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style x:Key="FileRow" TargetType="ListViewItem">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border x:Name="RowChrome"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                              Columns="{TemplateBinding GridView.ColumnCollection}"
+                                              VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RowChrome" Property="Background" Value="{DynamicResource Row.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="RowChrome" Property="Background" Value="{DynamicResource Row.Selected}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- 목록·큰 아이콘 보기의 줄입니다. GridViewRowPresenter 대신 평범한 내용 표시기를 씁니다. -->
+    <Style x:Key="SimpleRow" TargetType="ListViewItem">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="6,3" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border x:Name="RowChrome"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RowChrome" Property="Background" Value="{DynamicResource Row.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="RowChrome" Property="Background" Value="{DynamicResource Row.Selected}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="TileRow" TargetType="ListViewItem" BasedOn="{StaticResource SimpleRow}">
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <!--
+        창 단추입니다. 윈도우 제목 줄의 최소화·최대화·닫기와 같은 크기와 반응을 씁니다.
+        닫기만 빨갛게 물드는 것도 윈도우와 같습니다.
+    -->
+    <Style x:Key="CaptionButton" TargetType="Button">
+        <Setter Property="Width" Value="46" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="CaptionChrome" Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CaptionChrome" Property="Background" Value="{DynamicResource Button.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="CaptionChrome" Property="Background" Value="{DynamicResource Button.Pressed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CaptionCloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="CloseChrome" Background="{TemplateBinding Background}">
+                        <ContentPresenter x:Name="CloseGlyph"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CloseChrome" Property="Background" Value="#FFE81123" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="CloseChrome" Property="Background" Value="#FFF1707A" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- 주소 표시줄의 경로 조각 단추입니다. 글자만 보이다가 가리키면 살짝 떠오릅니다. -->
+    <Style x:Key="CrumbButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="5,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="CrumbChrome"
+                            Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CrumbChrome" Property="Background" Value="{DynamicResource Button.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="CrumbChrome" Property="Background" Value="{DynamicResource Button.Pressed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ItemsPanelTemplate x:Key="VerticalItemsPanel">
+        <VirtualizingStackPanel Orientation="Vertical" />
+    </ItemsPanelTemplate>
+
+    <!--
+        목록 보기는 위에서 아래로 채우다가 칸이 차면 오른쪽에 새 열을 만듭니다.
+        윈도우 탐색기의 "목록"과 같은 모양이라, 한 열짜리 자세히 보기와 달라집니다.
+
+        세로로 넘치게 하려면 높이는 화면에 묶고 폭은 풀어 주어야 합니다.
+        그 설정은 보기 방식을 바꾸는 코드에서 함께 걸어 줍니다.
+    -->
+    <ItemsPanelTemplate x:Key="ColumnsItemsPanel">
+        <controls:UniformVirtualizingPanel Orientation="Vertical"
+                                           ItemWidth="{Binding DataContext.ListColumnWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                           ItemHeight="{Binding DataContext.ListRowHeight, RelativeSource={RelativeSource AncestorType=ListView}}" />
+    </ItemsPanelTemplate>
+
+    <!--
+        아이콘 보기는 격자로 늘어놓습니다.
+        칸 크기가 모두 같으므로 가상화하는 패널을 씁니다. 화면에 든 줄만 만들어 씁니다.
+
+        칸 크기를 숫자로 박아 두면 안 됩니다.
+        아이콘을 키우면 칸보다 커져 잘려 나가고, 줄이면 칸이 그대로라 한 줄에 더 들어가지 않습니다.
+        그래서 지금 아이콘 크기를 따라가도록 묶어 둡니다.
+    -->
+    <ItemsPanelTemplate x:Key="WrapItemsPanel">
+        <controls:UniformVirtualizingPanel Orientation="Horizontal"
+                                           ItemWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                           ItemHeight="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=ListView}}" />
+    </ItemsPanelTemplate>
+
+    <!-- 설정 창의 갈피입니다. WPF 기본 모양은 테마를 따라가지 않아 직접 그립니다. -->
+    <Style x:Key="SettingsTab" TargetType="TabItem">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="TabChromeBox"
+                            Background="Transparent"
+                            BorderBrush="{DynamicResource Pane.Border}"
+                            BorderThickness="0,0,0,2"
+                            Padding="{TemplateBinding Padding}"
+                            Margin="0,0,6,0">
+                        <ContentPresenter ContentSource="Header"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="TabChromeBox" Property="Background" Value="{DynamicResource Row.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TabChromeBox" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ── 패널 메뉴 ── -->
+
+    <Style x:Key="PaneMenu" TargetType="Menu">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- ── 탭 스트립 ── -->
+
+    <Style x:Key="TabChrome" TargetType="Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="3,3,0,0" />
+        <Setter Property="Padding" Value="8,2,4,2" />
+        <Setter Property="Margin" Value="1,0,0,0" />
+        <Setter Property="BorderThickness" Value="0,0,0,2" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+
+    <Style x:Key="TabLabel" TargetType="TextBlock" BasedOn="{StaticResource PaneSubLabel}">
+        <Setter Property="MaxWidth" Value="120" />
+        <Setter Property="Margin" Value="0,0,4,0" />
+    </Style>
+
+    <!-- 탭의 닫기 단추와 새 탭 단추입니다. -->
+    <Style x:Key="TabButton" TargetType="Button" BasedOn="{StaticResource ToolButton}">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FontSize" Value="9" />
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+    </Style>
+
+    <!-- 보기 방식 메뉴 -->
+    <!--
+        메뉴는 껍데기까지 직접 그립니다.
+        WPF 가 주는 기본 메뉴는 제 배경을 시스템 색으로 칠하고 우리 Background 를 무시합니다.
+        그래서 어둡게 테마에서 밝은 회색 바탕에 흰 글씨가 되어 글자가 보이지 않았습니다.
+    -->
+    <ControlTemplate x:Key="MenuPopupBox" TargetType="MenuItem">
+        <Border x:Name="MenuChrome"
+                Background="{TemplateBinding Background}"
+                Padding="{TemplateBinding Padding}"
+                SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="18" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="12" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="CheckMark"
+                           Grid.Column="0"
+                           Text="&#x2713;"
+                           Foreground="{DynamicResource Accent}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Visibility="Collapsed" />
+
+                <ContentPresenter Grid.Column="1"
+                                  ContentSource="Header"
+                                  RecognizesAccessKey="True"
+                                  VerticalAlignment="Center" />
+
+                <TextBlock Grid.Column="2"
+                           Text="{TemplateBinding InputGestureText}"
+                           Foreground="{DynamicResource Text.Muted}"
+                           Margin="20,0,0,0"
+                           VerticalAlignment="Center" />
+
+                <TextBlock x:Name="SubArrow"
+                           Grid.Column="3"
+                           Text="&#x203A;"
+                           Foreground="{DynamicResource Text.Secondary}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Visibility="Collapsed" />
+
+                <Popup x:Name="PART_Popup"
+                       AllowsTransparency="True"
+                       Focusable="False"
+                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                       Placement="Right"
+                       HorizontalOffset="-3"
+                       PopupAnimation="None">
+                    <Border Background="{DynamicResource Pane.HeaderBackground}"
+                            BorderBrush="{DynamicResource Pane.Border}"
+                            BorderThickness="1"
+                            Padding="2"
+                            SnapsToDevicePixels="True">
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                    </Border>
+                </Popup>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="Role" Value="SubmenuHeader">
+                <Setter TargetName="SubArrow" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="MenuChrome" Property="Background" Value="{DynamicResource Row.Hover}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Text.Muted}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- 메뉴 줄에 바로 놓이는 항목입니다. 하위 메뉴가 아래로 펼쳐집니다. -->
+    <ControlTemplate x:Key="MenuBarBox" TargetType="MenuItem">
+        <Border x:Name="MenuChrome"
+                Background="{TemplateBinding Background}"
+                Padding="8,3"
+                CornerRadius="3"
+                SnapsToDevicePixels="True">
+            <Grid>
+                <ContentPresenter ContentSource="Header"
+                                  RecognizesAccessKey="True"
+                                  VerticalAlignment="Center" />
+
+                <Popup x:Name="PART_Popup"
+                       AllowsTransparency="True"
+                       Focusable="False"
+                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                       Placement="Bottom"
+                       VerticalOffset="2"
+                       PopupAnimation="None">
+                    <Border Background="{DynamicResource Pane.HeaderBackground}"
+                            BorderBrush="{DynamicResource Pane.Border}"
+                            BorderThickness="1"
+                            Padding="2"
+                            SnapsToDevicePixels="True">
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                    </Border>
+                </Popup>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="MenuChrome" Property="Background" Value="{DynamicResource Button.Hover}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Text.Muted}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="DarkMenuItem" TargetType="MenuItem">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Template" Value="{StaticResource MenuPopupBox}" />
+        <Style.Triggers>
+            <Trigger Property="Role" Value="TopLevelHeader">
+                <Setter Property="Template" Value="{StaticResource MenuBarBox}" />
+            </Trigger>
+            <Trigger Property="Role" Value="TopLevelItem">
+                <Setter Property="Template" Value="{StaticResource MenuBarBox}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- 이름 없이 두어 코드에서 만든 메뉴 항목에도 그대로 걸립니다. -->
+    <Style TargetType="MenuItem" BasedOn="{StaticResource DarkMenuItem}" />
+
+    <!-- 메뉴 사이의 가름줄입니다. -->
+    <Style TargetType="Separator">
+        <Setter Property="Margin" Value="4,3" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border Height="1" Background="{DynamicResource Pane.Border}" SnapsToDevicePixels="True" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        대화상자 아래쪽 단추입니다.
+        도구 줄 단추는 바탕이 없어 글자처럼 보입니다. 누르는 자리라는 것이 보여야 하는 곳에는 이쪽을 씁니다.
+    -->
+    <Style x:Key="DialogButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Background" Value="{DynamicResource Pane.HeaderBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Pane.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="16,6" />
+        <Setter Property="MinWidth" Value="88" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonChrome"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonChrome" Property="Background" Value="{DynamicResource Button.Hover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonChrome" Property="Background" Value="{DynamicResource Button.Pressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource Text.Muted}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- 여럿이 줄지어 놓이는 작은 단추입니다. 가장 좁은 너비만 풀어 둡니다. -->
+    <Style x:Key="DialogSmallButton" TargetType="Button" BasedOn="{StaticResource DialogButton}">
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="10,4" />
+    </Style>
+
+    <!-- 기본 단추입니다. 눌러야 할 자리를 한눈에 알 수 있게 강조색으로 채웁니다. -->
+    <Style x:Key="DialogPrimaryButton" TargetType="Button" BasedOn="{StaticResource DialogButton}">
+        <Setter Property="Background" Value="{DynamicResource Accent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style x:Key="DarkContextMenu" TargetType="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource Pane.HeaderBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Pane.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="2"
+                            SnapsToDevicePixels="True">
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- 이름 없이 두어 코드에서 만든 메뉴에도 그대로 걸립니다. -->
+    <Style TargetType="ContextMenu" BasedOn="{StaticResource DarkContextMenu}" />
+
+    <Style x:Key="FileListView" TargetType="ListView">
+        <Setter Property="Background" Value="{DynamicResource List.Background}" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Pane.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource FileRow}" />
+        <!-- 가상화: 화면에 보이는 줄만 만듭니다. 파일 1만 개짜리 폴더가 여기서 갈립니다. -->
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+    </Style>
+
+
+    <!-- ── 스프레드시트(DataGrid) — 일괄 이름 바꾸기·정규화 창이 함께 씁니다. DataGrid 기본 모양은 밝은 테마 전용입니다. ── -->
+
+    <Style x:Key="SheetHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource Pane.HeaderBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Pane.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,1,1" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+
+    <Style x:Key="SheetCell" TargetType="DataGridCell">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Row.Selected}" />
+                <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SheetEditBox" TargetType="TextBox">
+        <Setter Property="Background" Value="{DynamicResource Input.Background}" />
+        <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Text.Primary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+</ResourceDictionary>

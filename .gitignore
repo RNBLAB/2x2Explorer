@@ -1,0 +1,42 @@
+# 빌드 산출물
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+artifacts/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userprefs
+
+# 로컬 설정 (실행하면 %APPDATA%에 만들어지므로 저장소에는 두지 않습니다)
+settings.local.json
+
+# 네이티브 SDK 바이너리를 따로 받아 쓰는 경우
+lib/Everything*.dll
+
+# 만들어지는 것은 모두 build/ 안에 모읍니다
+# (run.log, test.log, pack.log, publish/, dist/ — 스크립트가 다시 만듭니다)
+build/
+debug.log
+
+# 설치 마법사 한국어 파일 (Inno Setup 것을 pack.cmd 가 복사해 옵니다)
+installer/Korean.isl
+
+# 지울 후보를 모아 두는 자리 (cleanup.cmd 가 씁니다)
+Recycle Bin/
+
+# 작업하며 주고받은 파일
+Claude outputs/
+
+# 운영체제가 만드는 파일
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

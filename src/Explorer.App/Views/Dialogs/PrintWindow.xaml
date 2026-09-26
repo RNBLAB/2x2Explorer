@@ -1,0 +1,185 @@
+<Window x:Class="Explorer.App.Views.Dialogs.PrintWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Explorer.App.Views.Dialogs"
+        Title="일괄 인쇄"
+        Width="1500"
+        Height="800"
+        MinWidth="1000"
+        MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        AllowDrop="True"
+        Drop="OnFilesDropped"
+        DragOver="OnFilesDragOver"
+        Closing="OnClosing"
+        Background="{DynamicResource App.Background}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <DockPanel>
+        <local:PopupTitleBar x:Name="TitleBar" DockPanel.Dock="Top" />
+
+        <Grid>
+            <!-- 왼쪽은 이 창의 기능, 오른쪽은 편집 창들이 함께 쓰는 탐색기입니다 (58 : 42). 경계선은 끌어 옮깁니다. -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="58*" MinWidth="560" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="42*" MinWidth="240" />
+            </Grid.ColumnDefinitions>
+
+    <Grid Margin="16" Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="190" />
+        </Grid.RowDefinitions>
+
+        <!-- 놓는 자리 -->
+        <Border Grid.Row="0"
+                Margin="0,0,0,10"
+                Padding="10"
+                Background="{DynamicResource Pane.Background}"
+                BorderBrush="{DynamicResource Pane.Border}"
+                BorderThickness="1"
+                CornerRadius="4">
+            <TextBlock Style="{StaticResource PaneSubLabel}"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       Text="여기에 파일이나 폴더를 끌어다 놓으십시오.&#x0a;이미지(JPG·PNG·BMP·TIF)는 A4에 맞춰 직접 찍고, 문서(PDF·HWP·DOC·PPT·XLS·TXT)는 연결된 프로그램에 맡깁니다." />
+        </Border>
+
+        <!-- 목록과 단추 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ListView x:Name="Items"
+                      Grid.Column="0"
+                      Style="{StaticResource FileListView}"
+                      SelectionMode="Extended"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource FileColumnHeader}">
+                        <GridViewColumn Width="46">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="#" />
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Number}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="80">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="종류" />
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Kind}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+
+                        <GridViewColumn Width="520">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="파일" />
+                            </GridViewColumn.Header>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Path}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <StackPanel Grid.Column="1" Margin="12,0,0,0" Width="120">
+                <Button x:Name="OpenExplorerButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,14"
+                        Click="OnOpenExplorer" Content="탐색기 열기" />
+
+                <Button x:Name="AddFileButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,6"
+                        Click="OnAddFiles" Content="파일 추가" />
+                <Button x:Name="AddFolderButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,14"
+                        Click="OnAddFolder" Content="폴더 추가"
+                        ToolTip="폴더 바로 아래의 인쇄할 수 있는 파일만 담습니다." />
+
+                <Button x:Name="RemoveButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,6"
+                        Click="OnRemove" Content="선택 제거" />
+                <Button x:Name="UpButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,6"
+                        Click="OnMoveUp" Content="위로" />
+                <Button x:Name="DownButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,14"
+                        Click="OnMoveDown" Content="아래로" />
+
+                <Button x:Name="SortButton" Style="{StaticResource DialogSmallButton}" Padding="8,5" Margin="0,0,0,6"
+                        Click="OnSort" Content="이름순 정렬" />
+                <Button x:Name="ClearButton" Style="{StaticResource DialogSmallButton}" Padding="8,5"
+                        Click="OnClear" Content="전체 삭제" />
+            </StackPanel>
+        </Grid>
+
+        <!-- 프린터와 시작 -->
+        <DockPanel Grid.Row="2" Margin="0,12,0,10" LastChildFill="False">
+            <TextBlock DockPanel.Dock="Left"
+                       Style="{StaticResource PaneSubLabel}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"
+                       Text="프린터" />
+
+            <ComboBox x:Name="PrinterBox"
+                      DockPanel.Dock="Left"
+                      Width="320"
+                      VerticalAlignment="Center" />
+
+            <TextBlock x:Name="CountLabel"
+                       DockPanel.Dock="Left"
+                       Style="{StaticResource PaneSubLabel}"
+                       VerticalAlignment="Center"
+                       Margin="12,0,0,0" />
+
+            <Button x:Name="CloseButton"
+                    DockPanel.Dock="Right"
+                    Style="{StaticResource DialogButton}"
+                    Content="닫기"
+                    Margin="8,0,0,0"
+                    IsCancel="True" />
+
+            <Button x:Name="PrintButton"
+                    DockPanel.Dock="Right"
+                    Style="{StaticResource DialogPrimaryButton}"
+                    Content="인쇄 시작"
+                    IsDefault="True"
+                    Click="OnPrint" />
+        </DockPanel>
+
+        <!-- 기록 -->
+        <TextBox x:Name="Log"
+                 Grid.Row="3"
+                 IsReadOnly="True"
+                 FontFamily="Consolas, D2Coding, 굴림체"
+                 FontSize="12"
+                 Background="{DynamicResource List.Background}"
+                 Foreground="{DynamicResource Text.Primary}"
+                 BorderBrush="{DynamicResource Pane.Border}"
+                 BorderThickness="1"
+                 Padding="6"
+                 TextWrapping="NoWrap"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto" />
+
+    </Grid>
+
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" Background="Transparent" ResizeBehavior="PreviousAndNext" />
+
+            <local:PopupExplorer x:Name="SideExplorer" Grid.Column="2" Margin="0,12,12,12"
+                                 Hint="파일을 두 번 누르거나 왼쪽 목록으로 끌어 놓으면 인쇄 목록에 들어갑니다." />
+        </Grid>
+    </DockPanel>
+
+</Window>

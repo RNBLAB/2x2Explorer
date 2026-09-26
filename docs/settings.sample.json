@@ -1,0 +1,93 @@
+{
+  "version": 4,
+  "window": {
+    "left": 120,
+    "top": 80,
+    "width": 1600,
+    "height": 960,
+    "isMaximized": false
+  },
+  "panes": [
+    {
+      "index": 0,
+      "role": "files",
+      "startPath": "::MyComputer",
+      "startupMode": "startPath",
+      "lastTabs": [],
+      "lastActiveTab": 0,
+      "showHiddenFiles": false,
+      "sortColumn": "name",
+      "sortDirection": "ascending",
+      "viewMode": "details",
+      "showPreview": true
+    },
+    {
+      "index": 1,
+      "role": "files",
+      "startPath": "D:\\예시폴더",
+      "startupMode": "restoreTabs",
+      "lastTabs": [
+        "D:\\예시폴더\\2026",
+        "D:\\예시폴더\\2026\\계약서"
+      ],
+      "lastActiveTab": 1,
+      "showHiddenFiles": false,
+      "sortColumn": "name",
+      "sortDirection": "ascending",
+      "viewMode": "details",
+      "showPreview": true
+    },
+    {
+      "index": 2,
+      "role": "files",
+      "startPath": "%USERPROFILE%\\Downloads",
+      "startupMode": "startPath",
+      "lastTabs": [],
+      "lastActiveTab": 0,
+      "showHiddenFiles": false,
+      "sortColumn": "name",
+      "sortDirection": "ascending",
+      "viewMode": "details",
+      "showPreview": true
+    },
+    {
+      "index": 3,
+      "role": "files",
+      "startPath": "%USERPROFILE%\\Desktop",
+      "startupMode": "startPath",
+      "lastTabs": [],
+      "lastActiveTab": 0,
+      "showHiddenFiles": false,
+      "sortColumn": "name",
+      "sortDirection": "ascending",
+      "viewMode": "details",
+      "showPreview": true
+    }
+  ],
+  "preview": {
+    "followActivePane": true,
+    "fixedSourcePaneIndex": 0,
+    "debounceMs": 100,
+    "maxTextPreviewBytes": 2097152,
+    "confirmAboveBytes": 268435456
+  },
+  "search": {
+    "provider": "everything",
+    "fallbackToEnumerate": true,
+    "everythingSdkPath": null,
+    "maxResults": 5000
+  },
+  "view": {
+    "thumbnailSize": 20,
+    "thumbnailCacheCapacity": 2000,
+    "thumbnailConcurrency": 2,
+    "showStatusBar": true,
+    "watchDebounceMs": 200,
+    "largeThumbnailSize": 96
+  },
+  "theme": "system",
+  "favorites": [
+    "D:\\예시폴더\\2026",
+    "%USERPROFILE%\\Downloads"
+  ]
+}

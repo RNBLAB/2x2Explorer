@@ -1,0 +1,515 @@
+<UserControl x:Class="Explorer.App.Views.Panes.FileListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+
+        <!-- 이름 칸입니다. 편집 중이면 글자 대신 입력 상자가 나옵니다. -->
+        <DataTemplate x:Key="NameEditor">
+            <Grid>
+                <TextBlock x:Name="NameLabel"
+                           Text="{Binding Name}"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBox x:Name="NameEditorBox"
+                         Visibility="Collapsed"
+                         Text="{Binding EditingName, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource AddressBox}"
+                         Height="20"
+                         Padding="2,0"
+                         IsVisibleChanged="OnRenameEditorVisibleChanged"
+                         KeyDown="OnRenameEditorKeyDown"
+                         LostFocus="OnRenameEditorLostFocus" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                    <Setter TargetName="NameLabel" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="NameEditorBox" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!--
+            자세히 보기의 칸들입니다. 어떤 열을 어느 차례로 둘지는 설정이 정하고,
+            코드 비하인드의 ApplyColumns 가 이 틀을 골라 씁니다.
+        -->
+        <!--
+            아이콘 크기 바인딩이 풀리면 Width 가 비어 그림이 열 너비만큼 늘어납니다(2026-09-27 한 칸에서 겪음).
+            FallbackValue 는 그때 기본 크기로 버티게 하는 안전장치이고, 풀린 까닭은 debug.log 의 [바인딩] 줄에 남습니다.
+        -->
+        <DataTemplate x:Key="Cell.Name">
+            <DockPanel Opacity="{Binding Opacity}" LastChildFill="True">
+                <Image DockPanel.Dock="Left"
+                       Width="{Binding DataContext.ThumbnailPixelSize, RelativeSource={RelativeSource AncestorType=ListView}, FallbackValue=20}"
+                       Height="{Binding DataContext.ThumbnailPixelSize, RelativeSource={RelativeSource AncestorType=ListView}, FallbackValue=20}"
+                       Margin="0,0,8,0"
+                       Source="{Binding Thumbnail}"
+                       SnapsToDevicePixels="True"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource NameEditor}" />
+            </DockPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="Cell.Size">
+            <TextBlock Text="{Binding SizeText}" HorizontalAlignment="Right" Opacity="{Binding Opacity}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Cell.Modified">
+            <TextBlock Text="{Binding ModifiedText}" Opacity="{Binding Opacity}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Cell.Type">
+            <TextBlock Text="{Binding TypeText}" Opacity="{Binding Opacity}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Cell.Created">
+            <TextBlock Text="{Binding CreatedText}" Opacity="{Binding Opacity}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Cell.Extension">
+            <TextBlock Text="{Binding ExtensionText}" Opacity="{Binding Opacity}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Cell.Folder">
+            <TextBlock Text="{Binding FolderText}"
+                       Opacity="{Binding Opacity}"
+                       TextTrimming="CharacterEllipsis"
+                       ToolTip="{Binding FolderText}" />
+        </DataTemplate>
+
+        <!-- 목록 보기 -->
+        <DataTemplate x:Key="ListItemTemplate">
+            <DockPanel Opacity="{Binding Opacity}" LastChildFill="True">
+                <Image DockPanel.Dock="Left"
+                       Width="{Binding DataContext.ThumbnailPixelSize, RelativeSource={RelativeSource AncestorType=ListView}, FallbackValue=20}"
+                       Height="{Binding DataContext.ThumbnailPixelSize, RelativeSource={RelativeSource AncestorType=ListView}, FallbackValue=20}"
+                       Margin="0,0,8,0"
+                       Source="{Binding Thumbnail}"
+                       SnapsToDevicePixels="True"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+                <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource NameEditor}" />
+            </DockPanel>
+        </DataTemplate>
+
+        <!--
+            아이콘 보기의 이름 칸입니다.
+            한 줄로 자르면 긴 이름이 거의 남지 않아, 두 줄까지 접어 쓰고 그래도 넘치면 말줄임표를 답니다.
+            마우스를 얹으면 잘리지 않은 온 이름이 뜹니다.
+        -->
+        <DataTemplate x:Key="TileNameEditor">
+            <Grid>
+                <TextBlock x:Name="NameLabel"
+                           Text="{Binding Name}"
+                           ToolTip="{Binding Name}"
+                           TextWrapping="Wrap"
+                           TextTrimming="CharacterEllipsis"
+                           TextAlignment="Center"
+                           LineHeight="15"
+                           LineStackingStrategy="BlockLineHeight"
+                           MaxHeight="30"
+                           VerticalAlignment="Top" />
+                <TextBox x:Name="NameEditorBox"
+                         Visibility="Collapsed"
+                         Text="{Binding EditingName, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource AddressBox}"
+                         Height="20"
+                         VerticalAlignment="Top"
+                         Padding="2,0"
+                         IsVisibleChanged="OnRenameEditorVisibleChanged"
+                         KeyDown="OnRenameEditorKeyDown"
+                         LostFocus="OnRenameEditorLostFocus" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                    <Setter TargetName="NameLabel" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="NameEditorBox" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- 아이콘 보기 -->
+        <DataTemplate x:Key="TileItemTemplate">
+            <StackPanel HorizontalAlignment="Stretch" Opacity="{Binding Opacity}">
+                <Image Width="{Binding DataContext.ThumbnailPixelSize, RelativeSource={RelativeSource AncestorType=ListView}, FallbackValue=96}"
+                       Height="{Binding DataContext.ThumbnailPixelSize, RelativeSource={RelativeSource AncestorType=ListView}, FallbackValue=96}"
+                       Margin="0,4,0,6"
+                       HorizontalAlignment="Center"
+                       Source="{Binding Thumbnail}"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+                <ContentPresenter Content="{Binding}"
+                                  ContentTemplate="{StaticResource TileNameEditor}"
+                                  HorizontalAlignment="Stretch" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!--
+            셸 메뉴를 띄우지 못했을 때 쓰는 대비책입니다.
+            윈도우 메뉴가 안 나오더라도 최소한의 일은 할 수 있어야 합니다.
+        -->
+        <ContextMenu x:Key="FallbackMenu" Style="{StaticResource DarkContextMenu}" Opened="OnFallbackMenuOpened">
+            <ContextMenu.Resources>
+                <Style TargetType="MenuItem" BasedOn="{StaticResource DarkMenuItem}" />
+            </ContextMenu.Resources>
+
+            <MenuItem Tag="open" Header="열기" InputGestureText="Enter" Click="OnMenuOpen" />
+            <Separator />
+            <MenuItem Tag="restore" Header="되돌리기" Click="OnMenuRestore" />
+            <MenuItem Tag="purge" Header="아주 지우기" Click="OnMenuPurge" />
+            <Separator Tag="binsep" />
+            <MenuItem Tag="cut" Header="잘라내기" InputGestureText="Ctrl+X" Click="OnMenuCut" />
+            <MenuItem Tag="copy" Header="복사" InputGestureText="Ctrl+C" Click="OnMenuCopy" />
+            <MenuItem Tag="paste" Header="붙여넣기" InputGestureText="Ctrl+V" Click="OnMenuPaste" />
+            <Separator />
+            <MenuItem Tag="delete" Header="삭제" InputGestureText="Delete" Click="OnMenuDelete" />
+            <MenuItem Tag="rename" Header="이름 바꾸기" InputGestureText="F2" Click="OnMenuRename" />
+            <Separator />
+            <MenuItem Tag="newfolder" Header="새 폴더" Click="OnMenuNewFolder" />
+            <Separator />
+            <MenuItem Tag="properties" Header="속성" InputGestureText="Alt+Enter" Click="OnMenuProperties" />
+        </ContextMenu>
+
+        <!-- 보기 방식 메뉴 -->
+        <ContextMenu x:Key="ViewModeMenu" Style="{StaticResource DarkContextMenu}">
+            <MenuItem Header="자세히" Command="{Binding ViewModeCommand}" CommandParameter="Details" IsCheckable="True">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource DarkMenuItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewMode}" Value="Details">
+                                <Setter Property="IsChecked" Value="True" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <MenuItem Header="목록" Command="{Binding ViewModeCommand}" CommandParameter="List" IsCheckable="True">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource DarkMenuItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewMode}" Value="List">
+                                <Setter Property="IsChecked" Value="True" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <MenuItem Header="아이콘" Command="{Binding ViewModeCommand}" CommandParameter="LargeIcons" IsCheckable="True">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource DarkMenuItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewMode}" Value="LargeIcons">
+                                <Setter Property="IsChecked" Value="True" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+
+            <Separator />
+
+            <!--
+                정렬할 때 폴더를 먼저 모을지 고릅니다. 둘 가운데 하나만 켜집니다.
+                폴더 먼저로 두면 바로가기도 폴더와 함께 위에 모입니다.
+            -->
+            <MenuItem Header="폴더 먼저 정렬"
+                      Style="{StaticResource DarkMenuItem}"
+                      IsCheckable="True"
+                      IsChecked="{Binding FoldersFirst, Mode=TwoWay}"
+                      ToolTip="폴더와 바로가기를 위에 모으고 파일을 그 아래에 둡니다. 정렬 기준은 각 묶음 안에서 적용됩니다." />
+            <MenuItem Header="폴더·파일 섞어 정렬"
+                      Style="{StaticResource DarkMenuItem}"
+                      IsCheckable="True"
+                      IsChecked="{Binding MixFoldersAndFiles, Mode=TwoWay}"
+                      ToolTip="폴더와 파일을 가리지 않고 이름·날짜·크기 순서대로 한 줄로 늘어놓습니다." />
+
+            <Separator />
+
+            <!-- 숨김·시스템 파일입니다. 패널마다 따로 켜고 끄며 설정에 남습니다. -->
+            <MenuItem Header="숨김 파일 보이기"
+                      Style="{StaticResource DarkMenuItem}"
+                      IsCheckable="True"
+                      IsChecked="{Binding ShowHiddenFiles, Mode=TwoWay}" />
+        </ContextMenu>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--
+            도구 모음: 뒤로 · 앞으로 · 위로 | 새 폴더 · 보기 방식 · 새로고침 · 검색 | 주소 표시줄
+            글리프는 모두 Segoe MDL2 Assets입니다. 이름은 주석에 적어 둡니다.
+        -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,6" LastChildFill="True">
+            <Button DockPanel.Dock="Left"
+                    Style="{StaticResource ToolIconButton}"
+                    Command="{Binding BackCommand}"
+                    Content="&#xE72B;"
+                    ToolTip="뒤로" />
+            <Button DockPanel.Dock="Left"
+                    Style="{StaticResource ToolIconButton}"
+                    Command="{Binding ForwardCommand}"
+                    Content="&#xE72A;"
+                    ToolTip="앞으로" />
+            <Button DockPanel.Dock="Left"
+                    Style="{StaticResource ToolIconButton}"
+                    Command="{Binding UpCommand}"
+                    Content="&#xE74A;"
+                    Margin="0,0,8,0"
+                    ToolTip="위로 (Backspace)" />
+
+            <!--
+                로컬(네트워크도 클라우드도 아닌 곳: 고정 디스크·USB 메모리 등)을 결과에 넣을지 켜고 끕니다.
+                로컬·네트워크·클라우드 세 단추가 나란히 있고, 모든 경로는 셋 가운데 하나로만 갑니다.
+                글리프는 Segoe MDL2 HardDrive(EDA2)입니다.
+            -->
+            <Button x:Name="LocalToggle"
+                    DockPanel.Dock="Left"
+                    Style="{StaticResource ToolIconButton}"
+                    Content="&#xEDA2;"
+                    Visibility="Collapsed"
+                    Click="OnToggleLocalClick" />
+
+            <!--
+                네트워크 드라이브를 결과에 넣을지 켜고 끕니다. 찾기 전용 자리에서만 나옵니다.
+                네트워크 파일은 크기·날짜를 한 건 읽을 때마다 랜선을 한 번씩 타므로 검색이 크게 느려집니다.
+            -->
+            <Button x:Name="NetworkToggle"
+                    DockPanel.Dock="Left"
+                    Style="{StaticResource ToolIconButton}"
+                    Content="&#xE839;"
+                    Visibility="Collapsed"
+                    Click="OnToggleNetworkClick" />
+
+            <!--
+                클라우드(MYBOX 같은 가상 드라이브, OneDrive 같은 동기화 폴더)를 결과에 넣을지 켜고 끕니다.
+                네트워크 단추와 같은 자리에서만 나옵니다. 글리프는 Segoe MDL2 Cloud(E753)입니다.
+            -->
+            <Button x:Name="CloudToggle"
+                    DockPanel.Dock="Left"
+                    Style="{StaticResource ToolIconButton}"
+                    Content="&#xE753;"
+                    Margin="0,0,8,0"
+                    Visibility="Collapsed"
+                    Click="OnToggleCloudClick" />
+
+            <!--
+                찾기 전용 칸에서는 이 묶음을 통째로 감춥니다.
+                뒤로·앞으로·위로와 검색어 칸만 남아야 탐색기 칸과 헷갈리지 않습니다.
+            -->
+            <StackPanel x:Name="ExtraTools" DockPanel.Dock="Left" Orientation="Horizontal">
+
+            <Button Style="{StaticResource ToolIconButton}"
+                    Command="{Binding NewFolderCommand}"
+                    Content="&#xE8F4;"
+                    ToolTip="새 폴더 — 만든 뒤 바로 이름을 고칠 수 있습니다 (F2)" />
+
+            <!-- 일괄 인쇄 단추는 제목 띠(톱니 왼쪽)로 옮겼습니다. 이 칸에서는 Ctrl+P 로 엽니다. -->
+
+            <!-- 일괄 이름 바꾸기(베타) 단추는 제목 띠(인쇄와 설정 사이)로 옮겼습니다. 이 칸에서는 Ctrl+Shift+R 로 엽니다(설정에서 켰을 때만). -->
+
+            <Button x:Name="ViewModeButton"
+                    Style="{StaticResource ToolIconButton}"
+                    Content="&#xE8A9;"
+                    ContextMenu="{StaticResource ViewModeMenu}"
+                    Click="OnViewModeClick"
+                    ToolTip="보기 방식 — 자세히 / 목록 / 아이콘, 폴더 먼저 정렬 여부, 숨김 파일 (아이콘 보기에서 Ctrl+휠로 크기 조절)" />
+
+            <Button Style="{StaticResource ToolIconButton}"
+                    Command="{Binding RefreshCommand}"
+                    Content="&#xE72C;"
+                    ToolTip="새로고침 (F5)" />
+
+            <!-- 휴지통 단추는 뺐습니다. 즐겨찾기 5번(기본값)으로 엽니다. -->
+
+            <Button Style="{StaticResource ToolIconButton}"
+                    Click="OnSearchPopupClick"
+                    Content="&#xE721;"
+                    Margin="0,0,8,0"
+                    ToolTip="이름으로 찾기 — 따로 뜨는 검색 창에서 찾습니다. 이 탭 안에서 찾으려면 Ctrl+F 를 누르십시오." />
+
+            </StackPanel>
+
+            <!--
+                주소 표시줄입니다. 평소에는 경로를 조각 단추로 보여 주고,
+                빈 자리를 누르거나 Ctrl+L을 치면 글자로 고칠 수 있게 바뀝니다.
+                검색 중에는 검색어 칸으로 쓰므로 계속 글자 상태로 둡니다.
+            -->
+            <Grid>
+                <Border x:Name="AddressBackdrop"
+                        Background="{DynamicResource Input.Background}"
+                        BorderBrush="{DynamicResource Input.Border}"
+                        BorderThickness="1"
+                        CornerRadius="3"
+                        ToolTip="빈 자리를 누르면 경로를 직접 적을 수 있습니다 (Ctrl+L)"
+                        MouseLeftButtonDown="OnAddressBackdropClick" />
+
+                <ItemsControl x:Name="Crumbs"
+                              ItemsSource="{Binding Crumbs}"
+                              Margin="4,0"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Style="{StaticResource CrumbButton}"
+                                        Content="{Binding Name}"
+                                        CommandParameter="{Binding FullPath}"
+                                        Command="{Binding DataContext.NavigateToCrumbCommand,
+                                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                <TextBlock Text="›"
+                                           Margin="1,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource Text.Muted}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBox x:Name="AddressBox"
+                         Style="{StaticResource AddressBox}"
+                         Visibility="Collapsed"
+                         Text="{Binding AddressText, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="폴더 이름이나 경로를 적으면 아래에 후보가 나옵니다. ↑↓로 고르고 Enter로 갑니다."
+                         TextChanged="OnAddressTextChanged"
+                         GotKeyboardFocus="OnAddressGotFocus"
+                         LostKeyboardFocus="OnAddressLostFocus"
+                         PreviewKeyUp="OnAddressKeyUp"
+                         KeyDown="OnAddressKeyDown" />
+
+                <!--
+                    경로 후보입니다. 글자 칸의 내용을 건드리지 않고 아래에 따로 보여 줍니다.
+                    칸 안의 글자를 대신 채우면 한글을 만드는 중에 조합이 깨집니다.
+                -->
+                <Popup x:Name="AddressSuggestions"
+                       PlacementTarget="{Binding ElementName=AddressBox}"
+                       Placement="Bottom"
+                       StaysOpen="False"
+                       Focusable="False"
+                       AllowsTransparency="True">
+                    <Border Background="{DynamicResource Pane.Background}"
+                            BorderBrush="{DynamicResource Pane.Border}"
+                            BorderThickness="1"
+                            Padding="2">
+                        <ListBox x:Name="SuggestionList"
+                                 MaxHeight="240"
+                                 MinWidth="280"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="{DynamicResource Text.Primary}"
+                                 FontSize="12"
+                                 Focusable="False"
+                                 PreviewMouseLeftButtonUp="OnSuggestionClicked">
+                            <!-- 눌러도 초점이 옮겨 가지 않아야 글자 칸이 그대로 살아 있습니다. -->
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Focusable" Value="False" />
+                                    <Setter Property="Padding" Value="5,3" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </Border>
+                </Popup>
+            </Grid>
+        </DockPanel>
+
+        <ListView x:Name="List"
+                  Grid.Row="1"
+                  Style="{StaticResource FileListView}"
+                  ItemsSource="{Binding Items}"
+                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                  SelectionMode="Extended"
+                  SelectionChanged="OnListSelectionChanged"
+                  MouseDoubleClick="OnListDoubleClick"
+                  KeyDown="OnListKeyDown"
+                  PreviewMouseRightButtonDown="OnListRightButtonDown"
+                  PreviewMouseRightButtonUp="OnListRightButtonUp"
+                  PreviewMouseLeftButtonDown="OnListLeftButtonDown"
+                  PreviewMouseLeftButtonUp="OnListLeftButtonUp"
+                  PreviewMouseMove="OnListMouseMove"
+                  PreviewMouseWheel="OnListMouseWheel"
+                  PreviewTextInput="OnListTextInput"
+                  LostMouseCapture="OnListLostMouseCapture"
+                  ScrollViewer.ScrollChanged="OnListScrollChanged"
+                  AllowDrop="True"
+                  DragOver="OnListDragOver"
+                  DragLeave="OnListDragLeave"
+                  Drop="OnListDrop"
+                  GridViewColumnHeader.Click="OnColumnHeaderClick">
+
+            <!--
+                보기 방식은 코드 비하인드의 ApplyViewMode 가 바꿉니다.
+                ListView.View 를 Style 이나 DataTrigger 로 지정하면,
+                바인딩이 늦게 켜질 때 같은 GridView 가 다시 배정되면서
+                "두 개 이상의 ListView에서 뷰를 공유할 수 없습니다" 예외가 납니다.
+                그래서 자세히 보기의 GridView 는 여기에 직접 둡니다.
+            -->
+            <ListView.View>
+            <GridView x:Name="DetailsGrid" ColumnHeaderContainerStyle="{StaticResource FileColumnHeader}" />
+            </ListView.View>
+        </ListView>
+
+        <!--
+            범위 지정 선택 상자입니다. 목록 위에 겹쳐 놓되 마우스는 가로막지 않습니다.
+            그리는 일은 코드 비하인드가 합니다.
+        -->
+        <Canvas x:Name="BandLayer"
+                Grid.Row="1"
+                ClipToBounds="True"
+                IsHitTestVisible="False">
+            <Rectangle x:Name="BandBox"
+                       Visibility="Collapsed"
+                       Fill="{DynamicResource Row.Selected}"
+                       Stroke="{DynamicResource Accent}"
+                       StrokeThickness="1"
+                       Opacity="0.5" />
+        </Canvas>
+
+        <!-- 상태 줄 -->
+        <Grid Grid.Row="2"
+              Margin="2,6,2,0"
+              Visibility="{Binding ShowStatusBar, Converter={StaticResource BooleanToVisibility}}">
+            <TextBlock Text="{Binding StatusText}"
+                       Style="{StaticResource PaneSubLabel}"
+                       HorizontalAlignment="Left" />
+            <TextBlock Text="{Binding SelectionText}"
+                       Style="{StaticResource PaneSubLabel}"
+                       Foreground="{DynamicResource Accent}"
+                       HorizontalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="{Binding MeasuredText}"
+                           Style="{StaticResource PaneSubLabel}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0" />
+
+                <!-- 폴더 크기는 안을 다 뒤져야 알 수 있어서, 누를 때만 셉니다. -->
+                <Button Style="{StaticResource ToolButton}"
+                        Command="{Binding MeasureCommand}"
+                        Content="{Binding MeasureText}"
+                        Padding="8,1"
+                        FontSize="11"
+                        VerticalAlignment="Center"
+                        ToolTip="고른 폴더의 총 크기를 셉니다. 고른 것이 없으면 지금 폴더를 셉니다." />
+
+                <TextBlock Text="읽는 중…"
+                           Style="{StaticResource PaneSubLabel}"
+                           VerticalAlignment="Center"
+                           Margin="8,0,0,0"
+                           Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibility}}" />
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+
+</UserControl>

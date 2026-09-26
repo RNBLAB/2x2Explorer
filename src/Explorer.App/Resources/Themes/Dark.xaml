@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 기본 다크 팔레트입니다. 라이트 테마는 같은 키로 Light.xaml을 만들어 교체합니다. -->
+    <SolidColorBrush x:Key="App.Background" Color="#FF1B1B1F" />
+    <SolidColorBrush x:Key="Pane.Background" Color="#FF232329" />
+    <SolidColorBrush x:Key="Pane.HeaderBackground" Color="#FF2B2B33" />
+    <SolidColorBrush x:Key="Pane.Border" Color="#FF3A3A44" />
+    <SolidColorBrush x:Key="Pane.BorderActive" Color="#FF4C8DFF" />
+    <SolidColorBrush x:Key="Text.Primary" Color="#FFE8E8EC" />
+    <SolidColorBrush x:Key="Text.Secondary" Color="#FF9A9AA6" />
+    <SolidColorBrush x:Key="Text.Muted" Color="#FF6E6E7A" />
+    <SolidColorBrush x:Key="Accent" Color="#FF4C8DFF" />
+    <SolidColorBrush x:Key="Warning" Color="#FFE0A33A" />
+
+    <!-- 목록 -->
+    <SolidColorBrush x:Key="List.Background" Color="#FF1F1F25" />
+    <SolidColorBrush x:Key="Row.Hover" Color="#FF2F2F39" />
+    <SolidColorBrush x:Key="Row.Selected" Color="#FF35507E" />
+
+    <!-- 툴팁 -->
+    <SolidColorBrush x:Key="ToolTip.Background" Color="#FF32323C" />
+    <SolidColorBrush x:Key="ToolTip.Border" Color="#FF4A4A58" />
+
+    <!-- 입력 -->
+    <SolidColorBrush x:Key="Input.Background" Color="#FF1A1A20" />
+    <SolidColorBrush x:Key="Input.Border" Color="#FF3A3A44" />
+    <SolidColorBrush x:Key="Button.Hover" Color="#FF3A3A46" />
+    <SolidColorBrush x:Key="Button.Pressed" Color="#FF4A4A58" />
+
+    <!-- 코드 미리보기 색입니다. 주석·글월·수·미리 잡아 둔 낱말 넷만 씁니다. -->
+    <SolidColorBrush x:Key="Code.Comment" Color="#FF6A9955" />
+    <SolidColorBrush x:Key="Code.Quoted" Color="#FFCE9178" />
+    <SolidColorBrush x:Key="Code.Number" Color="#FFB5CEA8" />
+    <SolidColorBrush x:Key="Code.Keyword" Color="#FF569CD6" />
+
+</ResourceDictionary>

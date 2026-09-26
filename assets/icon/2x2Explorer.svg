@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+<defs>
+ <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6FB3FF"/><stop offset="1" stop-color="#3D78D8"/></linearGradient>
+ <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9AD9A1"/><stop offset="1" stop-color="#56A96A"/></linearGradient>
+ <linearGradient id="y" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFD66E"/><stop offset="1" stop-color="#EAAE35"/></linearGradient>
+ <linearGradient id="r" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FF9A79"/><stop offset="1" stop-color="#E66B4D"/></linearGradient>
+ <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FFFFFF" stop-opacity=".72"/><stop offset=".5" stop-color="#EAF3FF" stop-opacity=".36"/><stop offset="1" stop-color="#B7CBE4" stop-opacity=".20"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#18324D" flood-opacity=".20"/></filter>
+ <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="10"/></filter>
+</defs>
+<!-- blue folder -->
+<g transform="translate(7.473 -10.686) scale(0.93557)" filter="url(#shadow)"><path d="M116 275 Q116 218 173 218 H310 L357 267 H467 Q514 267 514 314 V479 Q514 531 462 531 H168 Q116 531 116 479Z" fill="url(#b)" stroke="#264C78" stroke-width="14"/>
+<path d="M128 326 Q128 286 168 286 H463 Q502 286 502 326 V472 Q502 510 464 510 H166 Q128 510 128 472Z" fill="url(#glass)" opacity=".42"/></g>
+<!-- green folder -->
+<g transform="translate(58.499 -10.686) scale(0.93557)" filter="url(#shadow)"><path d="M510 275 Q510 218 567 218 H704 L751 267 H861 Q908 267 908 314 V479 Q908 531 856 531 H562 Q510 531 510 479Z" fill="url(#g)" stroke="#3C7148" stroke-width="14"/>
+<path d="M522 326 Q522 286 562 286 H857 Q896 286 896 326 V472 Q896 510 858 510 H560 Q522 510 522 472Z" fill="url(#glass)" opacity=".42"/></g>
+<!-- yellow folder -->
+<g transform="translate(7.473 55.141) scale(0.93557)" filter="url(#shadow)"><path d="M116 573 Q116 516 173 516 H310 L357 565 H467 Q514 565 514 612 V777 Q514 829 462 829 H168 Q116 829 116 777Z" fill="url(#y)" stroke="#7D5A1F" stroke-width="14"/>
+<path d="M128 624 Q128 584 168 584 H463 Q502 584 502 624 V770 Q502 808 464 808 H166 Q128 808 128 770Z" fill="url(#glass)" opacity=".40"/></g>
+<!-- red folder -->
+<g transform="translate(58.499 55.141) scale(0.93557)" filter="url(#shadow)"><path d="M510 573 Q510 516 567 516 H704 L751 565 H861 Q908 565 908 612 V777 Q908 829 856 829 H562 Q510 829 510 777Z" fill="url(#r)" stroke="#8E4433" stroke-width="14"/>
+<path d="M522 624 Q522 584 562 584 H857 Q896 584 896 624 V770 Q896 808 858 808 H560 Q522 808 522 770Z" fill="url(#glass)" opacity=".40"/></g>
+<!-- glass lens -->
+<g transform="translate(-85.807 -95.148) scale(1.16759)" filter="url(#shadow)"><circle cx="512" cy="520" r="146" fill="#DCEBFA" fill-opacity=".78" stroke="#284A6C" stroke-width="20"/><circle cx="512" cy="520" r="111" fill="url(#glass)" stroke="#8AA9C7" stroke-width="8"/>
+<path d="M595 624 L724 753" stroke="#284A6C" stroke-width="54" stroke-linecap="round"/><path d="M595 624 L724 753" stroke="#8EB4D8" stroke-width="31" stroke-linecap="round"/>
+<path d="M456 468 Q473 432 512 420" fill="none" stroke="#FFFFFF" stroke-opacity=".78" stroke-width="22" stroke-linecap="round"/></g>
+</svg>

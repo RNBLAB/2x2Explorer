@@ -1,0 +1,155 @@
+<UserControl x:Class="Explorer.App.Views.Panes.PreviewPane"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:panes="clr-namespace:Explorer.App.Views.Panes">
+
+    <!-- DataContext는 PreviewViewModel입니다. -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 머리말: 파일 이름 · 크기 · 해상도나 인코딩. 그림일 때는 오른쪽에 맞춤 드롭다운이 붙습니다. -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,8" LastChildFill="True">
+            <Button x:Name="FitButton"
+                    DockPanel.Dock="Right"
+                    VerticalAlignment="Top"
+                    Style="{StaticResource DialogSmallButton}"
+                    Click="OnFitButton"
+                    Content="자동 맞춤 ▾"
+                    ToolTip="그림 맞춤 방식을 고릅니다.&#x0a;자동: 가로가 긴 그림은 너비, 세로가 긴 그림은 높이에 맞춤 (Ctrl+0)&#x0a;Ctrl+휠로 확대·축소합니다."
+                    Visibility="{Binding ShowFit, Converter={StaticResource BooleanToVisibility}}">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="FitMenu">
+                        <MenuItem x:Name="FitAutoItem" Header="자동 맞춤" InputGestureText="Ctrl+0"
+                                  Click="OnFitAuto" ToolTip="가로가 긴 그림은 너비 맞춤, 세로가 긴 그림은 높이 맞춤" />
+                        <MenuItem x:Name="FitWidthItem" Header="너비 맞춤" Click="OnFitWidth"
+                                  ToolTip="그림 너비를 칸 너비에 맞춥니다" />
+                        <MenuItem x:Name="FitHeightItem" Header="높이 맞춤" Click="OnFitHeight"
+                                  ToolTip="그림 전체가 세로로 한눈에 들어오게 맞춥니다" />
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+
+            <StackPanel>
+                <TextBlock Text="{Binding FileName}" Style="{StaticResource PaneLabel}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Details}" Style="{StaticResource PaneSubLabel}" />
+                    <TextBlock Text="  ·  "
+                               Style="{StaticResource PaneSubLabel}"
+                               Visibility="{Binding ExtraInfo, Converter={StaticResource EmptyToCollapsed}}" />
+                    <TextBlock Text="{Binding ExtraInfo}" Style="{StaticResource PaneSubLabel}" />
+                    <TextBlock x:Name="ZoomLabel"
+                               Style="{StaticResource PaneSubLabel}"
+                               Foreground="{DynamicResource Accent}"
+                               Margin="8,0,0,0"
+                               Visibility="Collapsed" />
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+
+        <Grid Grid.Row="1">
+
+            <!--
+                그림 폭은 코드가 맞춤 방식에 따라 정하고, 높이는 Stretch=Uniform 이 비율대로 따라옵니다.
+                칸보다 작으면 가운데에 놓고, 크면 넘치는 만큼 스크롤합니다.
+                진짜 이미지와 윈도우가 만든 미리보기 그림, 한글 문서의 첫 쪽 그림이 같은 자리를 씁니다.
+            -->
+            <ScrollViewer x:Name="Scroller"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto"
+                          Background="Transparent"
+                          SizeChanged="OnScrollerSizeChanged"
+                          PreviewMouseWheel="OnScrollerMouseWheel"
+                          PreviewMouseLeftButtonDown="OnDragStart"
+                          PreviewMouseMove="OnDragMove"
+                          PreviewMouseLeftButtonUp="OnDragEnd"
+                          LostMouseCapture="OnDragCancel"
+                          Visibility="{Binding ShowImage, Converter={StaticResource BooleanToVisibility}}">
+                <Image x:Name="PreviewImage"
+                       Source="{Binding Image}"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+            </ScrollViewer>
+
+            <!-- 텍스트: 고정폭 글꼴, 읽기 전용, 줄바꿈 없음 -->
+            <TextBox Text="{Binding Text, Mode=OneWay}"
+                     IsReadOnly="True"
+                     IsReadOnlyCaretVisible="True"
+                     FontFamily="Consolas, D2Coding, 굴림체"
+                     FontSize="12"
+                     Background="{DynamicResource List.Background}"
+                     Foreground="{DynamicResource Text.Primary}"
+                     BorderBrush="{DynamicResource Pane.Border}"
+                     BorderThickness="1"
+                     Padding="6"
+                     TextWrapping="NoWrap"
+                     HorizontalScrollBarVisibility="Auto"
+                     VerticalScrollBarVisibility="Auto"
+                     Visibility="{Binding ShowText, Converter={StaticResource BooleanToVisibility}}" />
+
+            <!--
+                코드: 같은 고정폭 글꼴에 색만 입힙니다.
+                TextBox 는 글자마다 색을 달리할 수 없어 여기만 RichTextBox 를 씁니다.
+                내용은 코드 비하인드의 ApplyCode 가 채웁니다.
+            -->
+            <RichTextBox x:Name="CodeView"
+                         IsReadOnly="True"
+                         IsDocumentEnabled="False"
+                         FontFamily="Consolas, D2Coding, 굴림체"
+                         FontSize="12"
+                         Background="{DynamicResource List.Background}"
+                         Foreground="{DynamicResource Text.Primary}"
+                         BorderBrush="{DynamicResource Pane.Border}"
+                         BorderThickness="1"
+                         Padding="0"
+                         HorizontalScrollBarVisibility="Auto"
+                         VerticalScrollBarVisibility="Auto"
+                         Visibility="{Binding ShowCode, Converter={StaticResource BooleanToVisibility}}" />
+
+            <!--
+                윈도우 미리보기 핸들러가 문서를 그리는 자리입니다.
+                오피스·한글·PDF처럼 만든 회사가 핸들러를 등록해 둔 형식이 여기로 옵니다.
+            -->
+            <Border BorderBrush="{DynamicResource Pane.Border}"
+                    BorderThickness="1"
+                    Background="White"
+                    Visibility="{Binding ShowHandler, Converter={StaticResource BooleanToVisibility}}">
+                <!--
+                    한글처럼 쪽 모양을 아는 문서는 판을 키워 확대하고, 넘치는 만큼 이 막대로 굴립니다.
+                    막대는 WPF 쪽에 두어야 합니다. 핸들러 창 위에는 WPF 를 겹쳐 그릴 수 없습니다.
+                -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <panes:PreviewHandlerHost x:Name="HandlerHost" />
+                    <ScrollBar x:Name="HandlerVerticalBar" Grid.Column="1" Orientation="Vertical"
+                               Visibility="Collapsed" Scroll="OnHandlerScroll" />
+                    <ScrollBar x:Name="HandlerHorizontalBar" Grid.Row="1" Orientation="Horizontal"
+                               Visibility="Collapsed" Scroll="OnHandlerScroll" />
+                </Grid>
+            </Border>
+
+            <!-- 안내문 -->
+            <TextBlock Text="{Binding Message}"
+                       Style="{StaticResource PanePlaceholder}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       TextAlignment="Center"
+                       MaxWidth="320"
+                       Visibility="{Binding ShowMessage, Converter={StaticResource BooleanToVisibility}}" />
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

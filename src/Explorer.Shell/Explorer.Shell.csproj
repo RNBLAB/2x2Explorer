@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>Explorer.Shell</RootNamespace>
+    <AssemblyName>Explorer.Shell</AssemblyName>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--
+      셸이 돌려주는 HBITMAP을 BitmapSource로 바꾸려면 PresentationCore가 필요합니다.
+      이 프로젝트는 창을 만들지 않고, 이미지 형식 변환에만 WPF 타입을 씁니다.
+    -->
+    <UseWPF>true</UseWPF>
+    <!--
+      일괄 인쇄가 System.Drawing.Printing 을 씁니다.
+      그 어셈블리는 윈도우 데스크톱 런타임 안에 이미 들어 있고, 이 설정이 켜져야 참조됩니다.
+      WinForms 창을 만들려는 것이 아니라 인쇄와 그리기 형식을 쓰기 위한 것입니다.
+      NuGet 꾸러미를 더 받아 오지는 않습니다.
+    -->
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Explorer.Core\Explorer.Core.csproj" />
+  </ItemGroup>
+
+</Project>

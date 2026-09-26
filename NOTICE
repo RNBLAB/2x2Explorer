@@ -1,0 +1,13 @@
+2x2 Explorer
+Copyright 2026 RNBLAB
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full license text.
+
+Third-party components
+----------------------
+
+PDFsharp 6.2.4 - MIT License - https://github.com/empira/PDFsharp
+  Used by the PDF editor for merging pages, removing pages and writing
+  images to PDF. Restored as a NuGet package at build time; no copy of
+  it is redistributed in this repository.

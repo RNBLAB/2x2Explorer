@@ -1,0 +1,32 @@
+# Git stores text files with LF and checks them out with whatever the platform
+# uses. Lines below override that where a fixed ending matters.
+* text=auto
+
+# cmd.exe reads batch files line by line and needs CRLF. Force it on checkout
+# so start.cmd and cleanup.cmd keep working on a machine configured for LF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Visual Studio rewrites the solution file with CRLF every time it saves.
+*.sln text eol=crlf
+
+# Source and markup. Marked text so git normalizes them instead of guessing.
+*.cs      text diff=csharp
+*.xaml    text
+*.csproj  text
+*.props   text
+*.json    text
+*.md      text
+*.svg     text
+*.editorconfig text
+
+# Binary. Never normalized, never diffed as text.
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.dll binary
+*.pdb binary

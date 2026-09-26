@@ -1,0 +1,302 @@
+<Window x:Class="Explorer.App.Views.Dialogs.LayoutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="설정"
+        Width="820"
+        Height="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource App.Background}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0,12,0,0">
+
+            <!-- ── 창 나누기 ── -->
+            <TabItem Header="창 나누기" Style="{StaticResource SettingsTab}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                               Style="{StaticResource PaneSubLabel}"
+                               Margin="0,0,0,12"
+                               TextWrapping="Wrap"
+                               Text="창을 몇으로 나눌지 고르고, 칸마다 탐색기로 쓸지 미리보기로 쓸지 정합니다. 미리보기 칸은 마지막으로 누른 탐색기 칸에서 고른 파일을 보여 줍니다." />
+
+                    <StackPanel x:Name="LayoutChoices" Grid.Row="1" Grid.Column="0" Margin="0,0,16,0" />
+
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="150" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0"
+                                Background="{DynamicResource Pane.Background}"
+                                BorderBrush="{DynamicResource Pane.Border}"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="10">
+                            <Grid x:Name="Shape" />
+                        </Border>
+
+                        <StackPanel x:Name="PaneChoices" Grid.Row="1" Margin="0,14,0,0" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- ── 일반 ── -->
+            <TabItem Header="일반" Style="{StaticResource SettingsTab}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Style="{StaticResource PaneSubLabel}"
+                               Text="테마"
+                               VerticalAlignment="Center"
+                               Margin="0,0,0,10" />
+                    <ComboBox x:Name="ThemeBox"
+                              Grid.Row="0" Grid.Column="1"
+                              Width="200"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,0,10">
+                        <ComboBoxItem Content="시스템을 따름" />
+                        <ComboBoxItem Content="밝게" />
+                        <ComboBoxItem Content="어둡게" />
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Style="{StaticResource PaneSubLabel}"
+                               Text="목록 아이콘 크기"
+                               VerticalAlignment="Center"
+                               Margin="0,0,0,10" />
+                    <ComboBox x:Name="IconSizeBox"
+                              Grid.Row="1" Grid.Column="1"
+                              Width="200"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,0,10">
+                        <ComboBoxItem Content="작게 (16)" />
+                        <ComboBoxItem Content="보통 (20)" />
+                        <ComboBoxItem Content="크게 (24)" />
+                        <ComboBoxItem Content="아주 크게 (32)" />
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Style="{StaticResource PaneSubLabel}"
+                               Text="미리보기 기다림"
+                               ToolTip="목록을 훑을 때 파일을 매번 열지 않도록 기다리는 시간입니다."
+                               VerticalAlignment="Center"
+                               Margin="0,0,0,10" />
+                    <ComboBox x:Name="PreviewDelayBox"
+                              Grid.Row="2" Grid.Column="1"
+                              Width="200"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,0,10">
+                        <ComboBoxItem Content="바로 (0ms)" />
+                        <ComboBoxItem Content="짧게 (100ms)" />
+                        <ComboBoxItem Content="보통 (250ms)" />
+                        <ComboBoxItem Content="길게 (500ms)" />
+                    </ComboBox>
+
+                    <CheckBox x:Name="StatusBarBox"
+                              Grid.Row="3" Grid.Column="1"
+                              Content="패널 아래에 상태 줄 보이기"
+                              ToolTip="폴더·파일 개수와 고른 것의 크기를 보여 주는 줄입니다."
+                              Foreground="{DynamicResource Text.Primary}"
+                              Margin="0,0,0,10" />
+
+                    <CheckBox x:Name="LogBox"
+                              Grid.Row="4" Grid.Column="1"
+                              Content="기록 남기기"
+                              ToolTip="무언가 이상할 때만 켭니다. 실행 파일 옆 debug.log에 적습니다."
+                              Foreground="{DynamicResource Text.Primary}"
+                              Margin="0,0,0,10" />
+
+                    <CheckBox x:Name="BatchRenameBox"
+                              Grid.Row="5" Grid.Column="1"
+                              Content="일괄 이름 바꾸기(베타) 켜기"
+                              ToolTip="켜면 제목 표시줄(인쇄와 설정 사이)에 단추가 보이고, 칸 안에서 Ctrl+Shift+R 로 엽니다.&#x0a;아직 기능이 불완전한 베타입니다."
+                              Foreground="{DynamicResource Text.Primary}"
+                              Margin="0,0,0,10" />
+
+                    <TextBlock Grid.Row="6" Grid.ColumnSpan="2"
+                               Style="{StaticResource PaneSubLabel}"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0"
+                               Text="탭의 시작 위치와 시작 방식은 칸마다 다르므로 탭 줄의 오른쪽 단추 메뉴에서 정합니다." />
+                </Grid>
+            </TabItem>
+
+
+
+            <!--
+                ── 즐겨찾기 ──
+                지금 등록된 즐겨찾기를 보여 주고, 편집은 기존 즐겨찾기 편집 창을 띄워 합니다.
+                편집 창에서 [확인]을 누르면 이 설정 창의 확인·취소와 상관없이 곧바로 저장·반영됩니다.
+            -->
+            <TabItem Header="즐겨찾기" Style="{StaticResource SettingsTab}">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10" LastChildFill="True">
+                        <Button DockPanel.Dock="Right"
+                                Style="{StaticResource DialogButton}"
+                                Content="즐겨찾기 편집…"
+                                Click="OnEditFavorites"
+                                ToolTip="즐겨찾기의 경로·차례와 제목 표시줄에 띄울 것을 고칩니다." />
+                        <TextBlock x:Name="FavoritesSummary"
+                                   Style="{StaticResource PaneSubLabel}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </DockPanel>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="FavoritesList" Margin="0,0,12,0" />
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+            <!-- ── 검색 ── -->
+            <TabItem Header="검색" Style="{StaticResource SettingsTab}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Style="{StaticResource PaneSubLabel}"
+                               Text="검색 결과 상한"
+                               ToolTip="Everything 에게 이만큼까지만 달라고 합니다. 100에서 200000 사이."
+                               VerticalAlignment="Center"
+                               Margin="0,0,0,10" />
+                    <TextBox x:Name="SearchLimitBox"
+                             Grid.Row="0" Grid.Column="1"
+                             Width="200"
+                             HorizontalAlignment="Left"
+                             Style="{StaticResource AddressBox}"
+                             Height="24"
+                             Padding="6,0"
+                             Margin="0,0,0,10" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Style="{StaticResource PaneSubLabel}"
+                               Text="한 번에 읽을 건수"
+                               ToolTip="이만큼 읽을 때마다 목록에 먼저 올리고 다음 묶음으로 넘어갑니다. 200에서 50000 사이."
+                               VerticalAlignment="Center"
+                               Margin="0,0,0,10" />
+                    <TextBox x:Name="ChunkBox"
+                             Grid.Row="1" Grid.Column="1"
+                             Width="200"
+                             HorizontalAlignment="Left"
+                             Style="{StaticResource AddressBox}"
+                             Height="24"
+                             Padding="6,0"
+                             Margin="0,0,0,10" />
+
+                    <CheckBox x:Name="NetworkBox"
+                              Grid.Row="2" Grid.Column="1"
+                              Content="네트워크 드라이브의 결과도 보이기"
+                              ToolTip="네트워크 파일은 크기·날짜를 한 건 읽을 때마다 랜선을 한 번씩 탑니다. 끄면 검색이 크게 빨라집니다."
+                              Foreground="{DynamicResource Text.Primary}"
+                              Margin="0,0,0,10" />
+
+                    <CheckBox x:Name="FallbackBox"
+                              Grid.Row="3" Grid.Column="1"
+                              Content="Everything이 꺼져 있으면 지금 폴더 아래를 직접 훑기"
+                              Foreground="{DynamicResource Text.Primary}"
+                              Margin="0,0,0,10" />
+
+                    <TextBlock Grid.Row="4" Grid.ColumnSpan="2"
+                               Style="{StaticResource PaneSubLabel}"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0"
+                               Text="Everything 은 이름과 경로만 알려 줍니다. 크기와 날짜는 파일마다 한 번씩 읽어야 하고, 이 읽기가 검색 시간의 거의 전부입니다. 넓은 낱말로 찾을 때 오래 걸리면 상한을 낮추거나 네트워크 드라이브를 빼 보십시오." />
+                </Grid>
+            </TabItem>
+
+            <!-- ── 도움말 ── -->
+            <TabItem Header="도움말" Style="{StaticResource SettingsTab}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Style="{StaticResource PaneSubLabel}"
+                               Margin="0,0,0,10"
+                               TextWrapping="Wrap"
+                               Text="단축키 목록입니다. 글쇠는 파일 목록에 초점이 있을 때 듣습니다." />
+
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="Shortcuts" Margin="0,0,12,0" />
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+
+        <!-- 아래 단추 -->
+        <DockPanel Grid.Row="1" Margin="0,14,0,0" LastChildFill="False">
+            <Button DockPanel.Dock="Left"
+                    Style="{StaticResource DialogButton}"
+                    Content="창 너비 초기화"
+                    Click="OnResetSplits"
+                    ToolTip="가룻대를 끌어 바꾼 너비를 기본값으로 되돌립니다" />
+
+            <Button DockPanel.Dock="Right"
+                    Style="{StaticResource DialogButton}"
+                    Content="취소"
+                    Margin="8,0,0,0"
+                    IsCancel="True" />
+
+            <Button DockPanel.Dock="Right"
+                    Style="{StaticResource DialogPrimaryButton}"
+                    Content="확인"
+                    IsDefault="True"
+                    Click="OnConfirm" />
+        </DockPanel>
+
+    </Grid>
+
+</Window>
