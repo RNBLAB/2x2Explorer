@@ -25,6 +25,8 @@
 
 ## [1.1.0] - 2026-09-26
 
+GitHub 에 올리기 전에 만든 판이라 태그와 설치 파일이 없습니다. 변경 기록만 남깁니다.
+
 ### 추가
 - 검색 칸에 로컬·네트워크·클라우드 단추를 두어, 셋을 따로 켜고 끌 수 있습니다. 네트워크 단추 하나만 있던 것을 나눈 것입니다
 - 네이버 MYBOX 같은 클라우드 가상 드라이브와 OneDrive 같은 동기화 폴더를 클라우드로 알아봅니다
@@ -38,6 +40,8 @@
 - 폴더를 열지 못했을 때 빈 폴더처럼 보이던 것을 고쳤습니다. 이제 상태 줄에 까닭을 띄웁니다
 
 ## [1.0.0] - 2026-09-26
+
+GitHub 에 올리기 전에 만든 판이라 태그와 설치 파일이 없습니다. 변경 기록만 남깁니다.
 
 첫 공개 판입니다. 아래는 그때까지 만들어진 것을 한 번에 적은 것이라 다음 판부터는 이만큼 길지 않습니다.
 
@@ -78,6 +82,4 @@
 - 설정은 `%APPDATA%\2x2Explorer\settings.json` 에 판 번호와 함께 저장하고, 판이 올라가면 옮겨 줍니다
 
 [Unreleased]: https://github.com/RNBLAB/2x2Explorer/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/RNBLAB/2x2Explorer/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/RNBLAB/2x2Explorer/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/RNBLAB/2x2Explorer/releases/tag/v1.0.0
+[1.2.0]: https://github.com/RNBLAB/2x2Explorer/releases/tag/v1.2.0
